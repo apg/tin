@@ -91,7 +91,6 @@ snC_stackpush(sn_t *S, snC_stack_t *stack, sn_ptr_t value)
 sn_ptr_t
 snC_stackpop(sn_t *S, snC_stack_t *stack)
 {
-  sn_ptr_t out;
   if (stack != NULL && stack->sp > 0) {
     return stack->stack[--stack->sp];
   }

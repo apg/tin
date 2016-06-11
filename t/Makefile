@@ -1,4 +1,6 @@
+CFLAGS = -g -Wall -Werror -std=c99
 LDFLAGS = ../libsn.a
+
 SUITES = \
 	core_data.o \
 	stack_container.o \

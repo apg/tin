@@ -1,3 +1,5 @@
+CFLAGS = -g -Wall -Werror -std=c99
+
 OBJS = \
 	int.o \
 	stack.o \
