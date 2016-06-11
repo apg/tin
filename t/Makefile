@@ -1,4 +1,4 @@
-LDFLAGS =
+LDFLAGS = ../libsn.a
 SUITES = \
 	core_data.o \
 	stack_container.o \
