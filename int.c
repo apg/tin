@@ -5,7 +5,12 @@ sn_boxint(sn_t *S, int i)
 {
   if (i > SN_MAXINT || i < SN_MININT) {
     /* TODO: This should promote! */
-    fprintf(stderr, "fatal: %d is too large for range (%d, %d) to store in a native %d-bit integer\n   - TODO: support promotion to bigint\n", i, SN_MAXINT, SN_MININT, SN_INTBITS);
+    /* TODO: This should use the S->ERROR, but doesn't because of
+       testing (we don't currently setup an sn_t for testing */
+    fprintf(stderr, "fatal: %d is too large for range (%d, %d)"
+            "to store in a native %d-bit integer\n"
+            "- TODO: support promotion to bigint\n",
+            i, SN_MAXINT, SN_MININT, SN_INTBITS);
     exit(1);
   }
 
