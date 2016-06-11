@@ -26,15 +26,14 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#ifdef __LP64__
-typedef uint64_t sn_ptr_t;
-typedef int64_t sn_int_t;
-#define SN_INT_BITS 63
-#else
-typedef uint32_t sn_ptr_t;
-typedef int32_t sn_int_t;
-#define SN_INT_BITS 31
-#endif
+/* TODO: We expect 32-bit ints. Would be super nice to be able to use
+   64 if available. */
+#define SN_INTBITS 31
+#define SN_MAXINT (1 << 30)
+#define SN_MININT ~(1 << 30)
+
+typedef int sn_int_t;
+typedef uintptr_t sn_ptr_t;
 
 typedef struct Context sn_t;
 
@@ -45,7 +44,6 @@ struct Context {
   void (*free)(void *);
   sn_ptr_t NIL;
 };
-
 
 
 /* #define BOX_INT(x) ((sn_ptr_t) x << 1) */
@@ -83,7 +81,7 @@ struct Context {
 
 /* The first 3 of these are reused for sn_ptr_t checks */
 typedef enum tag {
-  SN_INT_T = 0, /* we have 31 / 63 bit native integers */
+  SN_INT_T = 0,
   SN_CONS_T = 1,
   SN_OBJ_T = 3,
 } sn_tag_t;
