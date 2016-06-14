@@ -88,6 +88,10 @@ typedef enum tag {
 
 #define SN_OBJECT_HEADER sn_int_t flags; sn_ptr_t previous;
 
+typedef struct cell {
+  SN_OBJECT_HEADER;
+} sn_cell_t;
+
 typedef struct cons {
   SN_OBJECT_HEADER;
   sn_ptr_t cdr;
@@ -200,6 +204,7 @@ int sn_unboxint(sn_t *S, sn_ptr_t o);
 const char *sn_unboxstr(sn_t *S, sn_ptr_t o);
 const sn_cons_t *sn_unboxcons(sn_t *S, sn_ptr_t o);
 
+sn_ptr_t sn_boxcons(sn_t *S, const sn_cons_t *c);
 const sn_cons_t *sn_cons(sn_t *S, sn_ptr_t a, const sn_cons_t *d);
 const sn_cons_t *sn_consnil(sn_t *S, sn_ptr_t a);
 
