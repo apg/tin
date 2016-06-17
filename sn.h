@@ -26,24 +26,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-/* TODO: We expect 32-bit ints. Would be super nice to be able to use
-   64 if available. */
-#define SN_INTBITS 31
-#define SN_MAXINT (1 << 30)
-#define SN_MININT ~(1 << 30)
-
 typedef int sn_int_t;
-typedef uintptr_t sn_ptr_t;
 
-typedef struct Context sn_t;
-
-struct Context {
-  FILE *ERROR;
-  void *(*malloc)(size_t);
-  void *(*realloc)(void *, size_t);
-  void (*free)(void *);
-  sn_ptr_t NIL;
-};
+typedef struct Value sn_value_t;
 
 
 /* #define BOX_INT(x) ((sn_ptr_t) x << 1) */
@@ -65,44 +50,47 @@ struct Context {
 /* #define MARK(x) x = (x | (1 << SN_INT_BITS)) */
 
 
-/* an sn_ptr_t looks like this:
- *
- * [ 30 bits (address)            | 00 (tag) ]
- *
- * | Tags | purpose         |
- * +------+-----------------+
- * | ?0   | fixnum (31-bit) |
- * | 11   | general pointer |
- * | 01   | cons            |
- * +------+-----------------+
- *
- * for fixnums, the ? is used for the fixnum to make it 31/63 bits
- */
-
-/* The first 3 of these are reused for sn_ptr_t checks */
 typedef enum tag {
-  SN_INT_T = 0,
-  SN_CONS_T = 1,
-  SN_OBJ_T = 3,
+  SN_NIL_T = 0,
+  SN_INT_T,
+  SN_CONS_T,
+  SN_STR_T,
 } sn_tag_t;
 
-#define SN_OBJECT_HEADER sn_int_t flags; sn_ptr_t previous;
+typedef struct Tracked sn_object_t;
 
-typedef struct cell {
-  SN_OBJECT_HEADER;
-} sn_cell_t;
+struct Tracked {
+  sn_object_t *last; /* last allocated object */
+  void *pointer;
+  int flags;
+};
+
+struct Value {
+  int flags;
+  union {
+    sn_object_t *o;
+    int i;
+  };
+};
 
 typedef struct cons {
-  SN_OBJECT_HEADER;
-  sn_ptr_t cdr;
-  sn_ptr_t car;
+  sn_value_t cdr;
+  sn_value_t car;
 } sn_cons_t;
 
 typedef struct str {
-  SN_OBJECT_HEADER;
   const char *data;
   size_t len;
 } sn_str_t;
+
+typedef struct Context {
+  FILE *ERROR;
+  void *(*malloc)(size_t);
+  void *(*realloc)(void *, size_t);
+  void (*free)(void *);
+  sn_value_t NIL;
+  sn_object_t *last;
+} sn_t;
 
 /**
  * stack pushers
@@ -194,21 +182,21 @@ int sn_checksize(sn_t *S);
  * from tin.
  */
 
-sn_ptr_t sn_boxint(sn_t *S, int i);
-sn_ptr_t sn_boxstr(sn_t *S, char *s);
-sn_ptr_t sn_boxstrl(sn_t *S, char *s, size_t n);
-sn_ptr_t sn_boxintern(sn_t *S, char *s);
-sn_ptr_t sn_boxinternl(sn_t *S, char *s, size_t n);
+sn_value_t sn_boxint(sn_t *S, int i);
+sn_value_t sn_boxstr(sn_t *S, char *s);
+sn_value_t sn_boxstrl(sn_t *S, char *s, size_t n);
+sn_value_t sn_boxintern(sn_t *S, char *s);
+sn_value_t sn_boxinternl(sn_t *S, char *s, size_t n);
 
-int sn_unboxint(sn_t *S, sn_ptr_t o);
-const char *sn_unboxstr(sn_t *S, sn_ptr_t o);
-const sn_cons_t *sn_unboxcons(sn_t *S, sn_ptr_t o);
+int sn_unboxint(sn_t *S, sn_value_t o);
+const char *sn_unboxstr(sn_t *S, sn_value_t o);
+const sn_cons_t *sn_unboxcons(sn_t *S, sn_value_t o);
 
-sn_ptr_t sn_boxcons(sn_t *S, const sn_cons_t *c);
-const sn_cons_t *sn_cons(sn_t *S, sn_ptr_t a, const sn_cons_t *d);
-const sn_cons_t *sn_consnil(sn_t *S, sn_ptr_t a);
+sn_value_t sn_boxcons(sn_t *S, const sn_cons_t *c);
+const sn_cons_t *sn_cons(sn_t *S, sn_value_t a, const sn_cons_t *d);
+const sn_cons_t *sn_consnil(sn_t *S, sn_value_t a);
 
-sn_ptr_t sn_car(sn_t *S, const sn_cons_t *c);
-sn_ptr_t sn_cdr(sn_t *S, const sn_cons_t *c);
+sn_value_t sn_car(sn_t *S, const sn_cons_t *c);
+sn_value_t sn_cdr(sn_t *S, const sn_cons_t *c);
 
 #endif

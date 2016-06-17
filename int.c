@@ -1,27 +1,19 @@
 #include "sn.h"
 
-sn_ptr_t
+sn_value_t
 sn_boxint(sn_t *S, int i)
 {
-  if (i > SN_MAXINT || i < SN_MININT) {
-    /* TODO: This should promote! */
-    /* TODO: This should use the S->ERROR, but doesn't because of
-       testing (we don't currently setup an sn_t for testing */
-    fprintf(stderr, "fatal: %d is too large for range (%d, %d)"
-            "to store in a native %d-bit integer\n"
-            "- TODO: support promotion to bigint\n",
-            i, SN_MAXINT, SN_MININT, SN_INTBITS);
-    exit(1);
-  }
-
-  return (sn_ptr_t) (i << 1);
+  sn_value_t v;
+  v.flags = SN_INT_T;
+  v.i = i;
+  return v;
 }
 
 int
-sn_unboxint(sn_t *S, sn_ptr_t o)
+sn_unboxint(sn_t *S, sn_value_t v)
 {
-  if ((o & SN_INT_T) != SN_INT_T) {
+  if ((v.flags & SN_INT_T) != SN_INT_T) {
     return 0;
   }
-  return (int) (o >> 1);
+  return v.i;
 }

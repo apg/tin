@@ -55,7 +55,7 @@ snC_freestack(sn_t *S, snC_stack_t *stack)
 
 /* snC_stackat accepts a positive index and returns the object at, or
    NIL */
-sn_ptr_t
+sn_value_t
 snC_stackat(sn_t *S, snC_stack_t *stack, int index)
 {
   if (stack != NULL && index >= 0 && index < stack->sp) {
@@ -65,7 +65,7 @@ snC_stackat(sn_t *S, snC_stack_t *stack, int index)
 }
 
 void
-snC_stackset(sn_t *S, snC_stack_t *stack, int index, sn_ptr_t value)
+snC_stackset(sn_t *S, snC_stack_t *stack, int index, sn_value_t value)
 {
   if (stack != NULL && index >= 0 && index < stack->sp) {
     stack->stack[index] = value;
@@ -73,7 +73,7 @@ snC_stackset(sn_t *S, snC_stack_t *stack, int index, sn_ptr_t value)
 }
 
 int
-snC_stackpush(sn_t *S, snC_stack_t *stack, sn_ptr_t value)
+snC_stackpush(sn_t *S, snC_stack_t *stack, sn_value_t value)
 {
   if (stack->sp >= stack->slots) {
     /* TODO: Should maybe consider doing 1.5x the stack->slots,
@@ -88,7 +88,7 @@ snC_stackpush(sn_t *S, snC_stack_t *stack, sn_ptr_t value)
   return 1;
 }
 
-sn_ptr_t
+sn_value_t
 snC_stackpop(sn_t *S, snC_stack_t *stack)
 {
   if (stack != NULL && stack->sp > 0) {

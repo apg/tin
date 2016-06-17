@@ -3,12 +3,12 @@
 
 TEST test_boxint(void)
 {
-  sn_ptr_t actual;
+  sn_value_t actual;
   actual = sn_boxint(NULL, 1);
-  ASSERT_EQ_FMT((sn_ptr_t) 2, actual, "%d");
+  ASSERT_EQ_FMT(1, actual.i, "%d");
 
   actual = sn_boxint(NULL, -1);
-  ASSERT_EQ_FMT((sn_ptr_t) -2, actual, "%d");
+  ASSERT_EQ_FMT(-1, actual.i, "%d");
 
   PASS();
 }
