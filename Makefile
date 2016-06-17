@@ -1,12 +1,14 @@
 CFLAGS = -g -Wall -Werror -std=c99
 
 OBJS = \
+	alloc.o \
+	cons.o \
 	int.o \
 	stack.o \
-	cons.o \
 	str.o
 
 HEADERS = \
+	gc.h \
 	sn.h \
 	stack.h
 

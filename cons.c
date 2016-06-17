@@ -1,26 +1,39 @@
+#include "gc.h"
 #include "sn.h"
 
-sn_ptr_t
+sn_value_t
 sn_boxcons(sn_t *S, const sn_cons_t *c)
 {
-  if (c != NULL) {
-    return ((sn_ptr_t) c) | SN_CONS_T;
+  sn_value_t x;
+  sn_object_t *bc;
+
+  if (c == NULL) {
+    return S->NIL;
   }
-  return S->NIL;
+
+  bc = snC_alloc(S, sizeof(*bc));
+  if (bc == NULL) {
+    /* TODO: WARN THAT WE'RE OUT OF MEMORY, GC, etc! */
+    return S->NIL;
+  }
+
+  x.flags = SN_CONS_T;
+  x.o = bc;
+  return x;
 }
 
 const sn_cons_t *
-sn_unboxcons(sn_t *S, sn_ptr_t o)
+sn_unboxcons(sn_t *S, sn_value_t o)
 {
-  if ((o & SN_CONS_T) != SN_CONS_T) {
+  if ((o.flags & SN_CONS_T) != SN_CONS_T) {
     return NULL;
   }
 
-  return (sn_cons_t *) (o & ~0x3);
+  return o.o->pointer;
 }
 
 const sn_cons_t *
-sn_cons(sn_t *S, sn_ptr_t a, const sn_cons_t *d)
+sn_cons(sn_t *S, sn_value_t a, const sn_cons_t *d)
 {
   sn_cons_t *out;
   out = S->malloc(sizeof(*out));
@@ -37,7 +50,7 @@ sn_cons(sn_t *S, sn_ptr_t a, const sn_cons_t *d)
 }
 
 const sn_cons_t *
-sn_consnil(sn_t *S, sn_ptr_t a)
+sn_consnil(sn_t *S, sn_value_t a)
 {
   sn_cons_t *out;
   out = S->malloc(sizeof(*out));
@@ -52,7 +65,7 @@ sn_consnil(sn_t *S, sn_ptr_t a)
   return out;
 }
 
-sn_ptr_t
+sn_value_t
 sn_car(sn_t *S, const sn_cons_t *c)
 {
   if (c != NULL) {
@@ -61,7 +74,7 @@ sn_car(sn_t *S, const sn_cons_t *c)
   return S->NIL;
 }
 
-sn_ptr_t
+sn_value_t
 sn_cdr(sn_t *S, const sn_cons_t *c)
 {
   if (c != NULL) {
