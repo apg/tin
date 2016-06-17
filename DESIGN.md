@@ -10,6 +10,22 @@ Core types:
 
 From here, we build upon it.
 
+In order to maintain as much possible compatibility with ANSI C, we
+utilize the following box type:
+
+    value {
+      int flags;
+      union {
+        sn_object_t *o;
+        int i;
+      }
+    }
+
+`sn_object_t` stores an opaque pointer to a previously allocated
+object, such as a string, or a cons. This box type, in addition,
+stores information pertaining to the garbage collector in order
+to track objects that have been created, or pushed into the
+interpreter.
 
 builtins:
 
